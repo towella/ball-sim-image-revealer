@@ -22,13 +22,13 @@ class Ball {
             mass = radius;
         }
 
-        void update(const int& sceneWidth, const int& sceneHeight, std::vector<Ball>& balls, Window& window) {
+        void update(const int& sceneWidth, const int& sceneHeight, std::vector<Ball>& balls) {
             // y vel set to gravity every frame (later removed by collisions)
             vel.set(vel.x(), vel.y() + gravity);
 
             Point2D newPos = pos + vel;
 
-            BallCollision(balls, newPos, window);
+            BallCollision(balls, newPos);
             SceneCollision(sceneWidth, sceneHeight, newPos);
 
             // clamp velocity and apply drag
