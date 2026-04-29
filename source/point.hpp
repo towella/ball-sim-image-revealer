@@ -98,7 +98,15 @@ class Point2D {
             return getDistance(p._x, p._y);
         }
 
-        double getAngleTo(const Point2D& p) {
+        double getDistanceNoSqrt(const double x, const double y) {
+            return (x - _x)*(x - _x) + (y - _y)*(y - _y);
+        }
+
+        double getDistanceNoSqrt(const Point2D& p) {
+            return getDistanceNoSqrt(p._x, p._y);
+        }
+
+        double getAngleToRad(const Point2D& p) {
             // -atan2 to fix flipped y I think?
             // M_PI/2 to bring angle so 0 rad is down rather than right
             return wrapRadAngle(-atan2(p._y - _y, p._x - _x) + M_PI/2);
