@@ -18,56 +18,53 @@ class Ball {
 
             radius = random.between(5, 21);
             pos = position;
-            vel = Point2D(random.between(-10, 10), 0);
+            vel = Point2D(random.between(-50, 50), 0);
             mass = radius;
         }
 
         void update(const int& sceneWidth, const int& sceneHeight, std::vector<Ball>& balls) {
             // y vel set to gravity every frame (later removed by collisions)
             vel.set(vel.x(), vel.y() + gravity);
+            AirResistance();
 
             Point2D newPos = pos + vel;
 
             BallCollision(balls, newPos);
             SceneCollision(sceneWidth, sceneHeight, newPos);
 
-            // clamp velocity and apply drag
-            if (abs(vel.x()) < 0.01) {
-                vel.set(0.0, vel.y());
-            } else {
-                vel.set(vel.x() * drag, vel.y());
-            }
-            if (vel.y() < gravity && vel.y() > -gravity * 3) {  // magic number to prevent infinite bouncing
-                vel.set(vel.x(), 0.0);
-            } else {
-                vel.set(vel.x(), vel.y() * drag);
-            }
-
             pos.set(newPos);
+        }
+        
+        // https://physicshub.github.io/simulations/BouncingBall  <-- Incredible resource
+        void AirResistance() {
+            // Air resistance proportional to velocity squared
+            double speed = sqrt(vel.x() * vel.x() + vel.y() * vel.y());
+            double dragMagnitude = dragCoefficient * speed * speed;
+            // Direction opposite to velocity
+            vel = vel + Point2D(-dragMagnitude * vel.x() / speed, -dragMagnitude * vel.x() / speed);
         }
 
         void SceneCollision(const int& sceneWidth, const int& sceneHeight, Point2D& newPos) {
             if (newPos.x() - radius < 0) {
                 newPos.set(radius, (int)newPos.y());
-                vel.set(-vel.x() * bounce, vel.y());
+                vel.set(-vel.x() * bounceDampening, vel.y());
             }
-            if (newPos.x() + radius >= sceneWidth) {
+            else if (newPos.x() + radius >= sceneWidth) {
                 newPos.set(sceneWidth - 1 - radius, (int)newPos.y());
-                vel.set(-vel.x() * bounce, vel.y());
+                vel.set(-vel.x() * bounceDampening, vel.y());
             }
             if (newPos.y() - radius < 0) {
                 newPos.set((int)newPos.x(), radius);
-                vel.set(vel.x(), -vel.y() * bounce);
+                vel.set(vel.x(), -vel.y() * bounceDampening);
             }
-            if (newPos.y() + radius >= sceneHeight) {
+            else if (newPos.y() + radius >= sceneHeight) {
                 newPos.set((int)newPos.x(), sceneHeight - 1 - radius);
-                vel.set(vel.x(), -vel.y() * bounce);
+                vel.set(vel.x(), -vel.y() * bounceDampening);
             }
         }
 
         void BallCollision(std::vector<Ball>& balls, Point2D& newPos) {
             for (Ball& ball : balls) {
-                //double distanceSqrd = newPos.getDistanceNoSqrt(ball.pos);
                 Point2D directionVector = Point2D(pos.x() - ball.pos.x(), pos.y() - ball.pos.y());
                 double distanceSqrd = directionVector.x() * directionVector.x() + directionVector.y() * directionVector.y();
                 double combinedRadiiSqrd = (radius + ball.radius) * (radius + ball.radius);
@@ -84,7 +81,7 @@ class Ball {
                     //    balls are moving away from each other;
                     //
                     // 3. if the balls are moving away from each other, then they are not colliding.
-                    if (dotProduct > 0) {
+                    if (dotProduct >= 0) {
                         double totalMass = mass + ball.mass;
                         double massFactorOne = 2 * ball.mass / totalMass;
                         double massFactorTwo = 2 * mass / totalMass;
@@ -96,29 +93,12 @@ class Ball {
                         ball.vel.set(ball.vel.x() - (scalarTwo * directionVector.x()),
                                      ball.vel.y() - (scalarTwo * directionVector.y()));
                     }
-
-                    // https://ericleong.me/research/circle-circle/
-                    // // this ball collides with other ball 
-                    // double pushBack = sqrt(combinedRadiiSqrd - distanceSqrd);
-                    // double angle = newPos.getAngleToRad(pos);  // angle to push point back along move vector
-                    // newPos.set(ball.pos.x() + sin(angle) * pushBack,
-                    //            ball.pos.y() + cos(angle) * pushBack);
-
-                    // // this ball has velocity change from collision
-                    // double distance = newPos.getDistance(ball.pos);
-                    // Point2D normVecBallToSelf = Point2D((ball.pos.x() - pos.x()) / distance,
-                    //                                     (ball.pos.y() - pos.y()) / distance);
-                    // double p = 2.0 * (double)(vel.x() * normVecBallToSelf.x() + vel.y() * normVecBallToSelf.y() - ball.vel.x() * normVecBallToSelf.x() - ball.vel.y() * normVecBallToSelf.y()) / (double)(mass + ball.mass);
-                    // vel.set(vel.x() - p * mass * normVecBallToSelf.x(),
-                    //         vel.y() - p * mass * normVecBallToSelf.y());
-                    // ball.vel.set(ball.vel.x() + p * ball.mass * normVecBallToSelf.x(),
-                    //              ball.vel.y() + p * ball.mass * normVecBallToSelf.y());
                 }
             }
         }
 
         void draw(Window& window) {
-            window.renderFilledCircle(pos, radius, colour);
+            window.renderCircle(pos, radius, colour);
         }
 
     private:
@@ -132,10 +112,9 @@ class Ball {
 
         Point2D pos;
         Point2D vel;
-        double gravity = 0.2;
-        double bounce = 0.7;
-        double drag = 0.995;
-
+        double gravity = 1;
+        double bounceDampening = 0.5;
+        double dragCoefficient = 0.001;
 };
 
 int Ball::nextId = 0;
