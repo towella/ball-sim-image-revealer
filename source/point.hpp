@@ -148,6 +148,7 @@ bool operator!=(const Point2D& p1, const Point2D& p2) {
 
 
 // allows points to be hashed for unordered_map
+// std::unordered_map<Point2D, int, PointHasher> map;
 class PointHasher {
     public:
         size_t operator()(const Point2D& p) const {

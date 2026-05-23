@@ -18,8 +18,20 @@ class Ball {
 
             radius = 20;
             pos = position;
-            vel = Point2D(random.between(-50, 50), 0);
+            vel = Point2D(30, 0);
             mass = radius;
+        }
+
+        double x() {
+            return pos.x();
+        }
+
+        double y() {
+            return pos.y();
+        }
+
+        int ID() {
+            return id;
         }
 
         void update(const int& sceneWidth, const int& sceneHeight, std::vector<Ball>& balls) {
@@ -27,7 +39,7 @@ class Ball {
             vel.set(vel.x(), vel.y() + gravity);
             Friction();
             pos.set(pos + vel);
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < physicsRepeatsPerFrame; i++) {
                 Collision(balls, sceneWidth, sceneHeight);
             }
         }
@@ -133,8 +145,9 @@ class Ball {
 
         Point2D pos;
         Point2D vel;
+        int physicsRepeatsPerFrame = 40;
         double gravity = 1;
-        double reboundDampening = 0.98;
+        double reboundDampening = 0.997;
         double bounceDampening = 0.5;
         double frictionCoefficient = 0.001;
 };

@@ -19,18 +19,19 @@
 
 class Scene {
     public:
-        Scene() {
-            width = 800;
-            height = 500;
-            numBalls = 30;
-            ballFrameInterval = 30;
-        }
-
         Scene(const int& sceneWidth, const int& sceneHeight, const int& sceneNumBalls, const int& sceneBallFrameInterval) {
             width = sceneWidth;
             height = sceneHeight;
             numBalls = sceneNumBalls;
             ballFrameInterval = sceneBallFrameInterval;
+
+            int yMax = std::ceil(height / batchGridSize);
+            int xMax = std::ceil(width / batchGridSize);
+            for (int y = 0; y < yMax; y++) {
+                for (int x = 0; x < xMax; x++) {
+                    batches[Point2D(x, y)] = {};
+                }
+            }
         }
 
         void update(double dt) {
@@ -38,13 +39,37 @@ class Scene {
             //getInput();
 
             // -- update --
+            // add new ball
             if (frameTimer % ballFrameInterval == 0 && balls.size() < numBalls) {
-                balls.push_back(Ball(random, Point2D(width / 2, 5)));
+                balls.push_back(Ball(random, Point2D(0, 0)));//width / 2, 5)));
             }
+            batchBalls();
             for (Ball& ball : balls) {
                 ball.update(width, height, balls);
             }
             frameTimer++;
+        }
+
+        void batchBalls() {
+            // clear batches
+            for (auto it = batches.begin(); it != batches.end(); it++) {
+                batches[it->first] = {};
+            }
+
+            for (Ball& ball : balls) {
+                Point2D key = Point2D((int) (ball.x() / batchGridSize),
+                                      (int) (ball.y() / batchGridSize));
+                batches[key].push_back(ball);
+            }
+
+            for (auto it = batches.begin(); it != batches.end(); it++) {
+                std::cout << it->first.x() << ' ' << it->first.y() << ": ";
+                for (Ball& ball : batches[it->first]) {
+                    std::cout << ball.ID() << ", ";
+                }
+                std::cout << '\n';
+            }
+            std::cout << '\n';
         }
 
         void draw(Window& window) {
@@ -56,6 +81,22 @@ class Scene {
             window.renderLine(Point2D(0, 0), Point2D(0, height));
             window.renderLine(Point2D(width, 0), Point2D(width, height));
             window.renderLine(Point2D(0, height), Point2D(width, height));
+
+            drawBatchGrid(window);
+            
+        }
+
+        void drawBatchGrid(Window& window) {
+            for (int y = 0; y < std::ceil(height/batchGridSize); y++) {
+                for (int x = 0; x < std::ceil(width/batchGridSize); x++) {
+                    window.renderLine(Point2D(0, y * batchGridSize), Point2D(width, y * batchGridSize));
+                }
+            }
+            for (int x = 0; x < std::ceil(width/batchGridSize); x++) {
+                for (int y = 0; y < std::ceil(height/batchGridSize); y++) {
+                    window.renderLine(Point2D(x * batchGridSize, 0), Point2D(x * batchGridSize, height));
+                }
+            }
         }
 
     private:
@@ -66,6 +107,8 @@ class Scene {
         int ballFrameInterval;
         int frameTimer = 0;
         std::vector<Ball> balls;
+        int batchGridSize = 50;
+        std::unordered_map<Point2D, std::vector<Ball>, PointHasher> batches;
     
         // void getInput() {
         //     std::unordered_map<SDL_Keycode, bool> keydowns = Input::getKeydowns();

@@ -12,12 +12,14 @@ int main(int argc, char* argv[]) {
     const int ticksPerFrame = 1000 / targetFps;  // a tick is a ms
     Window window = Window(RenderMode::simpleRenderer);
 
-    Scene scene = Scene(800, 500, 100, 30);
+    Scene scene = Scene(800, 500, 100, 3);
     scene.draw(window);
 
     Uint64 frameTimer = SDL_GetTicks64();
     double dt = 1.0;
     bool run = true;
+    int frameCount = 1;
+    int pauseFrame = 900;
 
     while (run) {
         // get delta time
@@ -30,7 +32,10 @@ int main(int argc, char* argv[]) {
         run = !Input::getQuit() && !press[SDLK_COMMA];
 
         // update
-        scene.update(dt);
+        if (frameCount != pauseFrame) {
+            scene.update(dt);
+            frameCount++;
+        }
 
         // render
         window.clear();
@@ -46,7 +51,6 @@ int main(int argc, char* argv[]) {
         // display fps in window title
         frameTime = SDL_GetTicks64() - frameTimer;
         window.setTitle(std::to_string((double) 1000 / frameTime));
-
     }
 
     window.close();
