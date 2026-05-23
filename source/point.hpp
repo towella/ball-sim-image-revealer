@@ -124,6 +124,10 @@ class Point2D {
             return *this;
         }
 
+        double dotProduct(const Point2D& other) {
+            return _x * other._x + _y * other._y;
+        }
+
     protected:
         double _x;
         double _y;

@@ -12,7 +12,7 @@ int main(int argc, char* argv[]) {
     const int ticksPerFrame = 1000 / targetFps;  // a tick is a ms
     Window window = Window(RenderMode::simpleRenderer);
 
-    Scene scene = Scene(800, 500, 10, 30);
+    Scene scene = Scene(800, 500, 100, 30);
     scene.draw(window);
 
     Uint64 frameTimer = SDL_GetTicks64();
