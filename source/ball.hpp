@@ -27,7 +27,9 @@ class Ball {
             vel.set(vel.x(), vel.y() + gravity);
             Friction();
             pos.set(pos + vel);
-            Collision(balls, sceneWidth, sceneHeight);
+            for (int i = 0; i < 20; i++) {
+                Collision(balls, sceneWidth, sceneHeight);
+            }
         }
         
         // https://physicshub.github.io/simulations/BouncingBall  <-- Incredible resource
@@ -107,10 +109,10 @@ class Ball {
                         double m2 = (dpNormB * (ball.mass - mass) + 2.0 * mass * dpNormA) / (mass + ball.mass);
 
                         // set vel as (tangent * tangent response scalar) + (normal * conservation of mass scalar)
-                        vel.set(tangentVector.x() * dpTangentA + normalVector.x() * m1, 
-                                tangentVector.y() * dpTangentA + normalVector.y() * m1);
-                        ball.vel.set(tangentVector.x() * dpTangentB + normalVector.x() * m2, 
-                                     tangentVector.y() * dpTangentB + normalVector.y() * m2);
+                        vel.set((tangentVector.x() * dpTangentA + normalVector.x() * m1) * reboundDampening,
+                                (tangentVector.y() * dpTangentA + normalVector.y() * m1) * reboundDampening);
+                        ball.vel.set((tangentVector.x() * dpTangentB + normalVector.x() * m2) * reboundDampening, 
+                                     (tangentVector.y() * dpTangentB + normalVector.y() * m2) * reboundDampening);
                     }
                 }
             }
@@ -132,6 +134,7 @@ class Ball {
         Point2D pos;
         Point2D vel;
         double gravity = 1;
+        double reboundDampening = 0.98;
         double bounceDampening = 0.5;
         double frictionCoefficient = 0.001;
 };
