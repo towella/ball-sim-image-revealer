@@ -18,7 +18,9 @@ class Ball {
 
             radius = 20;
             pos = position;
+            startPos = Point2D(pos.x(), pos.y());
             vel = Point2D(30, 0);
+            startVel = Point2D(vel.x(), vel.y());
             mass = radius;
         }
 
@@ -32,6 +34,16 @@ class Ball {
 
         int ID() {
             return id;
+        }
+
+        void reset() {
+            pos = startPos;
+            vel = startVel;
+            hasReset = true;
+        }
+
+        void setColour(const Colour& col) {
+            colour = col;
         }
 
         void update(const int& sceneWidth, const int& sceneHeight, std::vector<Ball>& balls) {
@@ -131,7 +143,11 @@ class Ball {
         }
 
         void draw(Window& window) {
-            window.renderCircle(pos, radius, colour);
+            if (!hasReset) {
+                window.renderCircle(pos, radius, colour);
+            } else {
+                window.renderFilledCircle(pos, radius, colour);
+            }
         }
 
     private:
@@ -142,9 +158,12 @@ class Ball {
         int radius;
         double mass;
         Colour colour = Colours::white;
+        bool hasReset = false;
 
         Point2D pos;
+        Point2D startPos;
         Point2D vel;
+        Point2D startVel;
         int physicsRepeatsPerFrame = 40;
         double gravity = 1;
         double reboundDampening = 0.997;
