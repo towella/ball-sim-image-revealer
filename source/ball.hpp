@@ -32,6 +32,10 @@ class Ball {
             return pos.y();
         }
 
+        int getRadius() {
+            return radius;
+        }
+
         int ID() {
             return id;
         }

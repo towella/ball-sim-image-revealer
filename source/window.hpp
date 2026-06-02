@@ -77,8 +77,8 @@ enum RenderMode {
 
 class Window {
     public:
-        static inline const int screenWidth = 800;
-        static inline const int screenHeight = 600;
+        static inline const int screenWidth = 2560;
+        static inline const int screenHeight = 1664;
         std::string title = "";
 
 // MARK: -- SETUP AND SHUTDOWN -------------------------------------------------------

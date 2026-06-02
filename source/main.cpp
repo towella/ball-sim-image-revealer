@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
     Window window = Window(RenderMode::simpleRenderer);
     SDL_Surface* revealImg = SDL_ConvertSurfaceFormat(window.loadSurface("./assets/test.jpg"), SDL_PIXELFORMAT_ARGB8888, 0);
 
-    Scene scene = Scene(800, 500, 100, 3, revealImg);
+    Scene scene = Scene(100, 3, revealImg);
     scene.draw(window);
 
     Uint64 frameTimer = SDL_GetTicks64();

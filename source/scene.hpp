@@ -19,11 +19,10 @@
 
 class Scene {
     public:
-        Scene(const int& sceneWidth, const int& sceneHeight, 
-            const int& sceneNumBalls, const int& sceneBallFrameInterval,
+        Scene(const int& sceneNumBalls, const int& sceneBallFrameInterval,
             SDL_Surface* revealSurface) {
-            width = sceneWidth;
-            height = sceneHeight;
+            width = revealSurface->w;
+            height = revealSurface->h;
             numBalls = sceneNumBalls;
             ballFrameInterval = sceneBallFrameInterval;
             revealImg = revealSurface;
@@ -42,6 +41,7 @@ class Scene {
             //getInput();
 
             // -- update --
+            // - sim -
             if (frameTimer < endFrame) {
                 // add new ball
                 if (frameTimer % ballFrameInterval == 0 && simBalls.size() < numBalls) {
@@ -49,14 +49,15 @@ class Scene {
                 }
                 updateBalls(simBalls);
 
+            // - colours -
             } else if (frameTimer == endFrame) {
-                // assign ball colours
+                colourBalls();
 
+            // - display -
             } else if (frameTimer <= endFrame * 2 - 1) {
                 // add ball from simBalls to displayBalls, but reset first
                 if (displayBalls.size() != numBalls && (frameTimer - endFrame) % ballFrameInterval == 0) {
                     simBalls[displayBalls.size()].reset();
-                    simBalls[displayBalls.size()].setColour(Colours::red);
                     displayBalls.push_back(simBalls[displayBalls.size()]);
                 }
                 updateBalls(displayBalls);
@@ -86,6 +87,30 @@ class Scene {
             }
         }
 
+        void colourBalls() {
+            Uint32* revealPixels = (Uint32*)revealImg->pixels;
+
+            for (Ball& ball : simBalls) {
+                int r = 0;
+                int g = 0;
+                int b = 0;
+                int radius = ball.getRadius();
+                int numPixels = 0;
+
+                for (int y = ball.y() - radius; y <= ball.y() + radius; y++) {
+                    for (int x = ball.x() - radius; x <= ball.x() + radius; x++) {
+                        Uint32 pixelColour = *(revealPixels + y * revealImg->pitch/4 + x);
+                        r += (int)((Uint8)(pixelColour >> 16));
+                        g += (int)((Uint8)(pixelColour >> 8));
+                        b += (int)((Uint8)pixelColour);
+                        numPixels++;
+                    }
+                }
+
+                ball.setColour(Colour(r / numPixels, g / numPixels, b / numPixels, 255));
+            }
+        }
+
         void draw(Window& window) {
             // decide which set of balls needs to be rendered based on sim phase
             std::vector<Ball> balls;
@@ -105,7 +130,6 @@ class Scene {
             window.renderLine(Point2D(0, height), Point2D(width, height));
 
             //drawBatchGrid(window);
-            
         }
 
         void drawBatchGrid(Window& window) {
