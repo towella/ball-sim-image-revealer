@@ -37,6 +37,10 @@ class Scene {
             }
         }
 
+        bool getRun() {
+            return run;
+        }
+
         void update(double dt) {
             // -- input --
             //getInput();
@@ -63,6 +67,8 @@ class Scene {
                     displayBalls.push_back(simBalls[displayBalls.size()]);
                 }
                 updateBalls(displayBalls);
+            } else {
+                run = false;
             }
 
             frameTimer++;
@@ -117,7 +123,7 @@ class Scene {
 
         void draw(Window& window) {
 
-            if (displayBalls.size() == 0) {
+            if (frameTimer < endFrame) {
                 for (Ball& ball : simBalls) {
                     ball.draw(window);
                 }
@@ -150,10 +156,11 @@ class Scene {
 
     private:
         Random random;
+        bool run = true;
         int width;
         int height;
         SDL_Surface* revealImg;
-        int endFrame = 500;
+        int endFrame = 300;
 
         int numBalls;
         int ballFrameInterval;

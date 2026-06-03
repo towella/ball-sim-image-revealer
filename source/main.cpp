@@ -55,6 +55,8 @@ int main(int argc, char* argv[]) {
         // display fps in window title
         frameTime = SDL_GetTicks64() - frameTimer;
         window.setTitle(std::to_string((double) 1000 / frameTime));
+
+        run = scene.getRun();
     }
 
     window.close();

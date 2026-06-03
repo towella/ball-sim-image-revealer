@@ -408,18 +408,21 @@ class Window {
             SDL_SetWindowTitle(window, this->title.c_str());
         }
 
+        // get window surface (within screenRect) and output to stdout for ffmpeg processing
         void coutFrame(const SDL_Rect* screenRect) {
-            // get window surface (within screenRect)
-            uint32_t windowPixelFormat = SDL_GetWindowPixelFormat(window);
-            if(windowPixelFormat == SDL_PIXELFORMAT_UNKNOWN)
-                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Window pix fmt error", SDL_GetError(), NULL);
+            // ensure pixel byte data is correct rgb24 format compatible with ffmpeg (i.e. remove alpha channel from argb8888 format)
+            uint32_t windowPixelFormat = SDL_PIXELFORMAT_RGB24;
+            // if(windowPixelFormat == SDL_PIXELFORMAT_UNKNOWN)
+            //     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Window pix fmt error", SDL_GetError(), NULL);
             SDL_Surface* screenshot = SDL_CreateRGBSurfaceWithFormat(0, screenRect->w, screenRect->h, 32, windowPixelFormat);
             if (SDL_RenderReadPixels(renderer, &screenshot->clip_rect, windowPixelFormat, screenshot->pixels, screenshot->pitch)) {
                 SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "RendererReadPixels error", SDL_GetError(), NULL);
-            }
+            } 
 
             // send surface pixel buffer to stdout for ffmpeg to generate video
-
+            // byte length of stream is number of pixels * 3 (3 channels, r, g and b)
+            // to write to stdout, need to reinterpret byte stream as characters
+            std::cout.write(reinterpret_cast<char*>(screenshot->pixels), screenRect->w * screenRect->h * 3);
 
             // // display screenshot for testing
             // Uint32* pixels = (Uint32*)screenshot->pixels;
@@ -429,11 +432,6 @@ class Window {
             //         renderPoint(x, y, colour);
             //     }
             // }
-
-            if (!test) {
-                SDL_SaveBMP(screenshot, "screenshot.bmp");
-                test = true;
-            }
 
             SDL_FreeSurface(screenshot);
         }
@@ -454,7 +452,6 @@ class Window {
         }
 
     private:
-        bool test = false;
         RenderMode renderMode;
         SDL_Window* window = NULL;
         SDL_Renderer* renderer = NULL;
