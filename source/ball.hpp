@@ -50,7 +50,7 @@ class Ball {
             colour = col;
         }
 
-        void update(const int& sceneWidth, const int& sceneHeight, std::unordered_map<int, std::vector<Ball>>& batches, const int batchGridSize) { //std::vector<Ball>& balls) {
+        void update(const int& sceneWidth, const int& sceneHeight, std::unordered_map<int, std::vector<Ball>>& batches, const int batchGridSize) {
             // y vel set to gravity every frame (later removed by collisions)
             vel.set(vel.x(), vel.y() + gravity);
             Friction();
@@ -69,7 +69,7 @@ class Ball {
             vel = vel + Point2D(-frictionMagnitude * vel.x() / speed, -frictionMagnitude * vel.x() / speed);
         }
 
-        void Collision(const int& sceneWidth, const int& sceneHeight, std::unordered_map<int, std::vector<Ball>>& batches, const int batchGridSize) { // std::vector<Ball>& balls) {
+        void Collision(const int& sceneWidth, const int& sceneHeight, std::unordered_map<int, std::vector<Ball>>& batches, const int batchGridSize) {
             BallCollision(sceneWidth, sceneHeight, batches, batchGridSize);
             SceneCollision(sceneWidth, sceneHeight);
         }
@@ -94,7 +94,7 @@ class Ball {
         }
 
         // https://www.youtube.com/watch?v=LPzyNOHY3A4
-        void BallCollision(const int& sceneWidth, const int& sceneHeight, std::unordered_map<int, std::vector<Ball>>& batches, const int batchGridSize) { // std::vector<Ball>& balls) {
+        void BallCollision(const int& sceneWidth, const int& sceneHeight, std::unordered_map<int, std::vector<Ball>>& batches, const int batchGridSize) {
             // see scene::batchBalls comment for more informaiton about batching system
             // doesn't use Point2D neighbours as too expensive with instantiation and deletion of point instances
             

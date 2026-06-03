@@ -36,6 +36,14 @@ int main(int argc, char* argv[]) {
         // render
         window.clear();
         scene.draw(window);
+
+        // output window frame to cout for ffmpeg processing via pipe
+        // must be output before present render
+        if (scene.displayCompleteSimulation) {
+            SDL_Rect screenRect = {0, 0, revealImg->w, revealImg->h};
+            window.coutFrame(&screenRect);
+        }
+
         window.presentRender();
 
         // delay to cap frame rate

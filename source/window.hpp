@@ -408,6 +408,36 @@ class Window {
             SDL_SetWindowTitle(window, this->title.c_str());
         }
 
+        void coutFrame(const SDL_Rect* screenRect) {
+            // get window surface (within screenRect)
+            uint32_t windowPixelFormat = SDL_GetWindowPixelFormat(window);
+            if(windowPixelFormat == SDL_PIXELFORMAT_UNKNOWN)
+                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Window pix fmt error", SDL_GetError(), NULL);
+            SDL_Surface* screenshot = SDL_CreateRGBSurfaceWithFormat(0, screenRect->w, screenRect->h, 32, windowPixelFormat);
+            if (SDL_RenderReadPixels(renderer, &screenshot->clip_rect, windowPixelFormat, screenshot->pixels, screenshot->pitch)) {
+                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "RendererReadPixels error", SDL_GetError(), NULL);
+            }
+
+            // send surface pixel buffer to stdout for ffmpeg to generate video
+
+
+            // // display screenshot for testing
+            // Uint32* pixels = (Uint32*)screenshot->pixels;
+            // for (int y = 0; y < screenshot->clip_rect.h; y++) {
+            //     for (int x = 0; x < screenshot->clip_rect.w; x++) {
+            //         Colour colour = Colour((Uint32) *(pixels + y * screenshot->pitch/4 + x));
+            //         renderPoint(x, y, colour);
+            //     }
+            // }
+
+            if (!test) {
+                SDL_SaveBMP(screenshot, "screenshot.bmp");
+                test = true;
+            }
+
+            SDL_FreeSurface(screenshot);
+        }
+
         void presentRender() {
             // render by renderer
             if (renderMode == RenderMode::simpleRenderer || renderMode == RenderMode::hardwareRendering) {
@@ -424,6 +454,7 @@ class Window {
         }
 
     private:
+        bool test = false;
         RenderMode renderMode;
         SDL_Window* window = NULL;
         SDL_Renderer* renderer = NULL;

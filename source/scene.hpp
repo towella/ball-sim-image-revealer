@@ -19,8 +19,9 @@
 
 class Scene {
     public:
-        Scene(const int& sceneNumBalls, const int& sceneBallFrameInterval,
-            SDL_Surface* revealSurface) {
+        bool displayCompleteSimulation = false;
+
+        Scene(const int& sceneNumBalls, const int& sceneBallFrameInterval, SDL_Surface* revealSurface) {
             width = revealSurface->w;
             height = revealSurface->h;
             numBalls = sceneNumBalls;
@@ -45,7 +46,7 @@ class Scene {
             if (frameTimer < endFrame) {
                 // add new ball
                 if (frameTimer % ballFrameInterval == 0 && simBalls.size() < numBalls) {
-                    simBalls.push_back(Ball(random, Point2D(0, 0)));//width / 2, 5)));
+                    simBalls.push_back(Ball(random, Point2D(0, 0)));
                 }
                 updateBalls(simBalls);
 
@@ -55,6 +56,7 @@ class Scene {
 
             // - display -
             } else if (frameTimer <= endFrame * 2 - 1) {
+                displayCompleteSimulation = true;
                 // add ball from simBalls to displayBalls, but reset first
                 if (displayBalls.size() != numBalls && (frameTimer - endFrame) % ballFrameInterval == 0) {
                     simBalls[displayBalls.size()].reset();
@@ -151,7 +153,7 @@ class Scene {
         int width;
         int height;
         SDL_Surface* revealImg;
-        int endFrame = 1500;
+        int endFrame = 500;
 
         int numBalls;
         int ballFrameInterval;
