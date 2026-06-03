@@ -142,15 +142,15 @@ class Scene {
                 ball.draw(window);
             }
 
+            //drawBatchGrid(window);
+        }
+
+        void drawBatchGrid(Window& window) {
             window.renderLine(Point2D(0, 0), Point2D(width, 0));
             window.renderLine(Point2D(0, 0), Point2D(0, height));
             window.renderLine(Point2D(width-1, 0), Point2D(width-1, height-1));
             window.renderLine(Point2D(0, height-1), Point2D(width-1, height-1));
 
-            //drawBatchGrid(window);
-        }
-
-        void drawBatchGrid(Window& window) {
             for (int y = 0; y < std::ceil(height/batchGridSize); y++) {
                 for (int x = 0; x < std::ceil(width/batchGridSize); x++) {
                     window.renderLine(Point2D(0, y * batchGridSize), Point2D(width, y * batchGridSize));
