@@ -31,7 +31,7 @@ class Scene {
             int xMax = std::ceil(width / batchGridSize);
             for (int y = 0; y < yMax; y++) {
                 for (int x = 0; x < xMax; x++) {
-                    batches[Point2D(x, y)] = {};
+                    batches[x * 1000 + y] = {};
                 }
             }
         }
@@ -70,10 +70,13 @@ class Scene {
             // requied for update no matter the phase of simulation
             batchBalls(balls);
             for (Ball& ball : balls) {
-                ball.update(width, height, balls);
+                ball.update(width, height, batches, batchGridSize);
             }
         }
 
+        // batches have keys consisting of int representing x and y values added together
+        // to avoid duplicates like 2x + 3y = 2y + 3x = 5, multiply x by 1000 (should never be 1000 cells on x)
+        // creates unique integer keys
         void batchBalls(std::vector<Ball>& balls) {
             // clear batches
             for (auto it = batches.begin(); it != batches.end(); it++) {
@@ -81,9 +84,8 @@ class Scene {
             }
 
             for (Ball& ball : balls) {
-                Point2D cell = Point2D((int) (ball.x() / batchGridSize),
-                                      (int) (ball.y() / batchGridSize));
-                batches[cell].push_back(ball);
+                int key = (int) (ball.x() / batchGridSize) * 1000 + (int) (ball.y() / batchGridSize);
+                batches[key].push_back(ball);
             }
         }
 
@@ -112,22 +114,21 @@ class Scene {
         }
 
         void draw(Window& window) {
-            // decide which set of balls needs to be rendered based on sim phase
-            std::vector<Ball> balls;
+
             if (displayBalls.size() == 0) {
-                balls = simBalls;
-            } else {
-                balls = displayBalls;
+                for (Ball& ball : simBalls) {
+                    ball.draw(window);
+                }
             }
 
-            for (Ball& ball : balls) {
+            for (Ball& ball : displayBalls) {
                 ball.draw(window);
             }
 
             window.renderLine(Point2D(0, 0), Point2D(width, 0));
             window.renderLine(Point2D(0, 0), Point2D(0, height));
-            window.renderLine(Point2D(width, 0), Point2D(width, height));
-            window.renderLine(Point2D(0, height), Point2D(width, height));
+            window.renderLine(Point2D(width-1, 0), Point2D(width-1, height-1));
+            window.renderLine(Point2D(0, height-1), Point2D(width-1, height-1));
 
             //drawBatchGrid(window);
         }
@@ -150,7 +151,7 @@ class Scene {
         int width;
         int height;
         SDL_Surface* revealImg;
-        int endFrame = 900;
+        int endFrame = 1500;
 
         int numBalls;
         int ballFrameInterval;
@@ -159,7 +160,7 @@ class Scene {
         std::vector<Ball> displayBalls;
 
         int batchGridSize = 50;
-        std::unordered_map<Point2D, std::vector<Ball>, PointHasher> batches;
+        std::unordered_map<int, std::vector<Ball>> batches;
     
         // void getInput() {
         //     std::unordered_map<SDL_Keycode, bool> keydowns = Input::getKeydowns();

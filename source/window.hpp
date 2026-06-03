@@ -77,8 +77,8 @@ enum RenderMode {
 
 class Window {
     public:
-        static inline const int screenWidth = 2560;
-        static inline const int screenHeight = 1664;
+        static inline const int screenWidth = 720;
+        static inline const int screenHeight = 1280;
         std::string title = "";
 
 // MARK: -- SETUP AND SHUTDOWN -------------------------------------------------------
@@ -266,20 +266,44 @@ class Window {
             renderCircle(center, radius, colour);
         }
 
+        // https://stackoverflow.com/questions/1201200/fast-algorithm-for-drawing-filled-circles
         void renderFilledCircle(const int& centreX, const int& centreY, int radius, const Colour& colour=Colours::white) {
             SDL_SetRenderDrawColor(renderer, colour.r, colour.g, colour.b, colour.a);
 
-            for (int w = 0; w < radius * 2; w++) {
-                for (int h = 0; h < radius * 2; h++)
-                {
-                    int dx = radius - w; // horizontal offset
-                    int dy = radius - h; // vertical offset
-                    if ((dx*dx + dy*dy) <= (radius * radius))
-                    {
-                        SDL_RenderDrawPoint(renderer, centreX + dx, centreY + dy);
+            // 12 fps
+            for (int y = -radius; y <= radius; y++) {
+                for (int x = -radius; x <= radius; x++) {
+                    // x - radius and y - radius offsets built into loops
+                    if(x*x + y*y <= radius * radius) {
+                        SDL_RenderDrawPoint(renderer, centreX + x, centreY + y);
                     }
                 }
             }
+
+            // 12 - 13 fps
+            // for (int x = -radius; x < radius ; x++) {
+            //     int hh = (int)std::sqrt(radius * radius - x * x);
+            //     int rx = centreX + x;
+            //     int ph = centreY + hh;
+
+            //     for (int y = centreY-hh; y < ph; y++) {
+            //         SDL_RenderDrawPoint(renderer, rx, y);
+            //     }
+            // }
+
+            // 11 - 12 fps
+            // int r2 = radius * radius;
+            // int area = r2 << 2;
+            // int rr = radius << 1;
+
+            // for (int i = 0; i < area; i++)
+            // {
+            //     int tx = (i % rr) - radius;
+            //     int ty = (i / rr) - radius;
+
+            //     if (tx * tx + ty * ty <= r2)
+            //         SDL_RenderDrawPoint(renderer, centreX + tx, centreY + ty);
+            // }
         }
 
         void renderFilledCircle(const Point2D& point, const int& radius, const Colour& colour=Colours::white) {

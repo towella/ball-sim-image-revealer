@@ -11,9 +11,9 @@ int main(int argc, char* argv[]) {
     const int targetFps = 60;  // SDL auto caps at 60
     const int ticksPerFrame = 1000 / targetFps;  // a tick is a ms
     Window window = Window(RenderMode::simpleRenderer);
-    SDL_Surface* revealImg = SDL_ConvertSurfaceFormat(window.loadSurface("./assets/test.jpg"), SDL_PIXELFORMAT_ARGB8888, 0);
+    SDL_Surface* revealImg = SDL_ConvertSurfaceFormat(window.loadSurface("./assets/test.png"), SDL_PIXELFORMAT_ARGB8888, 0);
 
-    Scene scene = Scene(100, 3, revealImg);
+    Scene scene = Scene(400, 3, revealImg);
     scene.draw(window);
 
     Uint64 frameTimer = SDL_GetTicks64();
