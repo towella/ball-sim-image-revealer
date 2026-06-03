@@ -48,9 +48,10 @@ class Scene {
             // -- update --
             // - sim -
             if (frameTimer < endFrame) {
+                updateSpawner();
                 // add new ball
                 if (frameTimer % ballFrameInterval == 0 && simBalls.size() < numBalls) {
-                    simBalls.push_back(Ball(random, Point2D(0, 0)));
+                    simBalls.push_back(Ball(random, spawner));
                 }
                 updateBalls(simBalls);
 
@@ -72,6 +73,14 @@ class Scene {
             }
 
             frameTimer++;
+        }
+
+        void updateSpawner() {
+            spawner = spawner + Point2D(spawnerSpeed * spawnerDirection, 0);
+            if ((spawnerDirection > 0 && spawner.x() >= revealImg->w - spawnerMargin) ||
+                (spawnerDirection < 0 && spawner.x() <= spawnerMargin)) {
+                    spawnerDirection *= -1;
+            }
         }
 
         void updateBalls(std::vector<Ball>& balls) {
@@ -160,13 +169,18 @@ class Scene {
         int width;
         int height;
         SDL_Surface* revealImg;
-        int endFrame = 300;
+        int endFrame = 1600;
 
         int numBalls;
         int ballFrameInterval;
         int frameTimer = 0;
         std::vector<Ball> simBalls;
         std::vector<Ball> displayBalls;
+        
+        int spawnerMargin = 50;
+        int spawnerDirection = 1;
+        int spawnerSpeed = 8;
+        Point2D spawner = Point2D(0 + spawnerMargin, 0);
 
         int batchGridSize = 50;
         std::unordered_map<int, std::vector<Ball>> batches;

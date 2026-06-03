@@ -8,12 +8,13 @@
 #include "scene.hpp"
 
 int main(int argc, char* argv[]) {
+    const bool generateVideo = true;
     const int targetFps = 60;  // SDL auto caps at 60
     const int ticksPerFrame = 1000 / targetFps;  // a tick is a ms
     Window window = Window(RenderMode::simpleRenderer);
-    SDL_Surface* revealImg = SDL_ConvertSurfaceFormat(window.loadSurface("./assets/test.png"), SDL_PIXELFORMAT_ARGB8888, 0);
+    SDL_Surface* revealImg = SDL_ConvertSurfaceFormat(window.loadSurface("./assets/image.png"), SDL_PIXELFORMAT_ARGB8888, 0);
 
-    Scene scene = Scene(400, 3, revealImg);
+    Scene scene = Scene(695, 2, revealImg);
     scene.draw(window);
 
     Uint64 frameTimer = SDL_GetTicks64();
@@ -39,7 +40,7 @@ int main(int argc, char* argv[]) {
 
         // output window frame to cout for ffmpeg processing via pipe
         // must be output before present render
-        if (scene.displayCompleteSimulation) {
+        if (scene.displayCompleteSimulation && generateVideo) {
             SDL_Rect screenRect = {0, 0, revealImg->w, revealImg->h};
             window.coutFrame(&screenRect);
         }

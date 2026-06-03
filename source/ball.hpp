@@ -19,7 +19,7 @@ class Ball {
             radius = 20;
             pos = position;
             startPos = Point2D(pos.x(), pos.y());
-            vel = Point2D(30, 0);
+            vel = Point2D(0, 10);
             startVel = Point2D(vel.x(), vel.y());
             mass = radius;
         }
