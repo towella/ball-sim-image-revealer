@@ -10,7 +10,7 @@ build:
 	
 run:
 	@echo "Running..."
-	@./ballSim
+	@./ballSim 720 1280 1600 /Users/towella/Documents/programming/GitHub/ball-sim-image-revealer/assets/image.png
 
 clean:
 	@rm ballSim
@@ -25,5 +25,5 @@ generate:
 # -f    force the output to be raw video
 # -i    input url ('-' since piping in byte stream)
 # -c:v  set video codec to h264
-	@./ballSim | ./include/ffmpeg -y -f rawvideo -pixel_format rgb24 -video_size 720x1280 -i - -c:v h264 -pix_fmt yuv420p video.mov
+	@./ballSim 720 1280 695 2 1600 /Users/towella/Documents/programming/GitHub/ball-sim-image-revealer/assets/image.png | ./include/ffmpeg -y -f rawvideo -pixel_format rgb24 -video_size 720x1280 -i - -c:v h264 -pix_fmt yuv420p video.mov
 	@echo "Generation complete"

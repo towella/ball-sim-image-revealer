@@ -8,13 +8,28 @@
 #include "scene.hpp"
 
 int main(int argc, char* argv[]) {
+    // get command line args
+    int width, height, numBalls, ballInterval, frameDuration;
+    std::string imagePath;
+    if (argc == 7) {
+        width = atoi(argv[1]);
+        height = atoi(argv[2]);
+        numBalls = atoi(argv[3]);
+        ballInterval = atoi(argv[4]);
+        frameDuration = atoi(argv[5]);
+        imagePath = argv[6];
+    } else {
+        std::cerr << "Error: Incorrect number of command line arguments\n";
+        throw argc;
+    }
+    
     const bool generateVideo = true;
     const int targetFps = 60;  // SDL auto caps at 60
     const int ticksPerFrame = 1000 / targetFps;  // a tick is a ms
-    Window window = Window(RenderMode::simpleRenderer);
-    SDL_Surface* revealImg = SDL_ConvertSurfaceFormat(window.loadSurface("./assets/image.png"), SDL_PIXELFORMAT_ARGB8888, 0);
+    Window window = Window(width, height, RenderMode::simpleRenderer);
+    SDL_Surface* revealImg = SDL_ConvertSurfaceFormat(window.loadSurface(imagePath), SDL_PIXELFORMAT_ARGB8888, 0);
 
-    Scene scene = Scene(695, 2, revealImg);
+    Scene scene = Scene(numBalls, ballInterval, frameDuration, revealImg);
     scene.draw(window);
 
     Uint64 frameTimer = SDL_GetTicks64();

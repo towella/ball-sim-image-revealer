@@ -77,17 +77,17 @@ enum RenderMode {
 
 class Window {
     public:
-        static inline const int screenWidth = 720;
-        static inline const int screenHeight = 1280;
         std::string title = "";
 
 // MARK: -- SETUP AND SHUTDOWN -------------------------------------------------------
 
-        Window(RenderMode renderMode=RenderMode::simpleRenderer) {
+        Window(int width, int height, RenderMode renderMode=RenderMode::simpleRenderer) {
             // NOTE: Either use the renderer for drawing to the screen and using textures
             // !OR! use the window screen surface to blit image surfaces. Can't use both!!
             this->renderMode = renderMode;
             bool failure = false;
+            screenWidth = width;
+            screenHeight = height;
 
             // 0 indicates success
             if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -452,12 +452,14 @@ class Window {
         }
 
     private:
+        int screenWidth;
+        int screenHeight;
         RenderMode renderMode;
         SDL_Window* window = NULL;
         SDL_Renderer* renderer = NULL;
         SDL_Surface* screenSurface = NULL;
         SDL_Texture * screenTexture = NULL;  // used for per pixel modification and rendering
-        Uint32 pixels[screenHeight * screenWidth];  // pixel buffer that is then used to update texture
+        Uint32 pixels[720 * 1280];  // pixel buffer that is then used to update texture
         std::vector<SDL_Texture*> allocatedTextures = {screenTexture};  // vector of textures for deallocation on close
         std::vector<SDL_Surface*> allocatedSurfaces = {screenSurface};  // vector of surface for deallocation on close
 };

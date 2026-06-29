@@ -21,11 +21,12 @@ class Scene {
     public:
         bool displayCompleteSimulation = false;
 
-        Scene(const int& sceneNumBalls, const int& sceneBallFrameInterval, SDL_Surface* revealSurface) {
+        Scene(const int& sceneNumBalls, const int& sceneBallFrameInterval, const int& frameDuration, SDL_Surface* revealSurface) {
             width = revealSurface->w;
             height = revealSurface->h;
             numBalls = sceneNumBalls;
             ballFrameInterval = sceneBallFrameInterval;
+            endFrame = frameDuration;
             revealImg = revealSurface;
 
             int yMax = std::ceil(height / batchGridSize);
@@ -169,7 +170,7 @@ class Scene {
         int width;
         int height;
         SDL_Surface* revealImg;
-        int endFrame = 1600;
+        int endFrame;
 
         int numBalls;
         int ballFrameInterval;

@@ -83,11 +83,12 @@ class Ball {
                 pos.set(sceneWidth - 1 - radius, (int)pos.y());
                 vel.set(-vel.x() * bounceDampening, vel.y());
             }
-            if (pos.y() - radius < 0) {
-                pos.set((int)pos.x(), radius);
-                vel.set(vel.x(), -vel.y() * bounceDampening);
-            }
-            else if (pos.y() + radius >= sceneHeight) {
+            // remove top cap
+            // if (pos.y() - radius < 0) {
+            //     pos.set((int)pos.x(), radius);
+            //     vel.set(vel.x(), -vel.y() * bounceDampening);
+            // }
+            if (pos.y() + radius >= sceneHeight) {
                 pos.set((int)pos.x(), sceneHeight - 1 - radius);
                 vel.set(vel.x(), -vel.y() * bounceDampening);
             }
