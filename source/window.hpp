@@ -88,6 +88,7 @@ class Window {
             bool failure = false;
             screenWidth = width;
             screenHeight = height;
+            pixels = new Uint32[screenWidth * screenHeight];
 
             // 0 indicates success
             if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -141,6 +142,11 @@ class Window {
                 }
                 screenTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, screenWidth, screenHeight);
             }
+        }
+
+        ~Window() {
+            // https://www.geeksforgeeks.org/cpp/new-and-delete-operators-in-cpp-for-dynamic-memory/
+            delete[] pixels;  // free/delete array
         }
 
         void close() {
@@ -459,7 +465,7 @@ class Window {
         SDL_Renderer* renderer = NULL;
         SDL_Surface* screenSurface = NULL;
         SDL_Texture * screenTexture = NULL;  // used for per pixel modification and rendering
-        Uint32 pixels[720 * 1280];  // pixel buffer that is then used to update texture
+        Uint32* pixels;  // pixel buffer that is then used to update texture (max allowed size, only required is used)
         std::vector<SDL_Texture*> allocatedTextures = {screenTexture};  // vector of textures for deallocation on close
         std::vector<SDL_Surface*> allocatedSurfaces = {screenSurface};  // vector of surface for deallocation on close
 };

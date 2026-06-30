@@ -21,10 +21,11 @@ class Scene {
     public:
         bool displayCompleteSimulation = false;
 
-        Scene(const int& sceneNumBalls, const int& sceneBallFrameInterval, const int& frameDuration, SDL_Surface* revealSurface) {
+        Scene(const int& sceneNumBalls, const int& sceneBallSize, const int& sceneBallFrameInterval, const int& frameDuration, SDL_Surface* revealSurface) {
             width = revealSurface->w;
             height = revealSurface->h;
             numBalls = sceneNumBalls;
+            ballSize = sceneBallSize;
             ballFrameInterval = sceneBallFrameInterval;
             endFrame = frameDuration;
             revealImg = revealSurface;
@@ -52,7 +53,7 @@ class Scene {
                 updateSpawner();
                 // add new ball
                 if (frameTimer % ballFrameInterval == 0 && simBalls.size() < numBalls) {
-                    simBalls.push_back(Ball(random, spawner));
+                    simBalls.push_back(Ball(random, spawner, ballSize));
                 }
                 updateBalls(simBalls);
 
@@ -173,6 +174,7 @@ class Scene {
         int endFrame;
 
         int numBalls;
+        int ballSize;
         int ballFrameInterval;
         int frameTimer = 0;
         std::vector<Ball> simBalls;

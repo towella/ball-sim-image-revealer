@@ -11,12 +11,12 @@
 
 class Ball {
     public:
-        Ball(Random random, Point2D position) {
+        Ball(Random random, Point2D position, const int& size) {
             this->random = random;
             id = nextId;
             nextId++;
 
-            radius = 20;
+            radius = size;
             pos = position;
             startPos = Point2D(pos.x(), pos.y());
             vel = Point2D(0, 10);

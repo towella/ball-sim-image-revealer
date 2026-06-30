@@ -5,7 +5,7 @@ import os
 # Create main window
 root = tk.Tk()
 root.title("Image Revealer")
-root.geometry("500x450")
+root.geometry("500x500")
 
 current_row = 0
 spacer = 20
@@ -90,11 +90,12 @@ def update_total_duration(event=None):
         total_duration_text["text"] = f"~{int(frame_dur_box.get()) // int(fps_box.get())} seconds"
 
 def generate():
-    global width_box, height_box, num_balls_box, ball_interval_box, frame_dur_box, reveal_path_entry, output_path_entry, video_name_entry, validation_label
+    global width_box, height_box, num_balls_box, ball_size_box, ball_interval_box, frame_dur_box
+    global reveal_path_entry, output_path_entry, video_name_entry, validation_label
     # validation
-    if width_box.get() != "" and height_box.get() != "" and num_balls_box.get() != "" and ball_interval_box.get() != "" and \
+    if width_box.get() != "" and height_box.get() != "" and num_balls_box.get() != "" and ball_size_box.get() != "" and ball_interval_box.get() != "" and \
         frame_dur_box.get() != "" and reveal_path_entry.get() != "" and output_path_entry.get() != "" and video_name_entry.get() != "":
-        os.system(f"../ballSim {width_box.get()} {height_box.get()} {num_balls_box.get()} {ball_interval_box.get()} {frame_dur_box.get()} {reveal_path_entry.get()} | ../include/ffmpeg -y -f rawvideo -pixel_format rgb24 -video_size 720x1280 -i - -c:v h264 -pix_fmt yuv420p {output_path_entry.get()}/{video_name_entry.get()}.mov")
+        os.system(f"../ballSim {width_box.get()} {height_box.get()} {num_balls_box.get()} {ball_size_box.get()} {ball_interval_box.get()} {frame_dur_box.get()} {reveal_path_entry.get()} | ../include/ffmpeg -y -f rawvideo -pixel_format rgb24 -video_size {width_box.get()}x{height_box.get()} -framerate {fps_box.get()} -i - -c:v h264 -pix_fmt yuv420p {output_path_entry.get()}/{video_name_entry.get()}.mov")
     else:
         validation_label["text"] = "Ensure all fields are filled and valid"
 
@@ -104,8 +105,8 @@ def generate():
 dimensions_label = get_tk_label(root, "Dimensions must fit in display to render", 11)
 dimensions_label.grid(row=current_row, column=1, pady=(spacer, 0))
 current_row += 1
-width_box = tk_spinbox(root, "Width: ", "720", 1, 4000)
-height_box = tk_spinbox(root, "Height: ", "1280", 1, 4000)
+width_box = tk_spinbox(root, "Video Width: ", "720", 1, 4000)
+height_box = tk_spinbox(root, "Video Height: ", "1280", 1, 4000)
 
 frame_dur_box = tk_spinbox(root, "Frame Duration: ", "1600", 1, 99999, spacer, command=update_total_duration)
 fps_box = tk_spinbox(root, "FPS: ", "60", 1, 300, command=update_total_duration)
@@ -118,12 +119,16 @@ total_duration_text.grid(row=current_row, column=1)
 current_row += 1
 
 num_balls_box = tk_spinbox(root, "Number of Balls: ", "695", 1, 99999, spacer)
+ball_size_box = tk_spinbox(root, "Ball Size: ", "20", 1, 50)
 ball_interval_box = tk_spinbox(root, "Ball Release Interval: ", "2", 1, 999)
 
-reveal_path_entry = file_selection(root, "Reveal Image: ", select_image, "select image", spacer)
+sim_dim_label = get_tk_label(root, "Sim box based on image not video size", 11)
+sim_dim_label.grid(row=current_row, column=1, pady=(spacer, 0))
+current_row += 1
+reveal_path_entry = file_selection(root, "Reveal Image: ", select_image, "select image")
 output_path_entry = file_selection(root, "Output Location: ", select_folder, "select folder")
 
-video_name_entry = tk_entry(root, "Output video name: ", default_text="MyVideo")
+video_name_entry = tk_entry(root, "Output Video Name: ", default_text="MyVideo")
 label = get_tk_label(root, ".mov", 14)
 label.grid(row=(current_row-1), column=2, sticky="w")
 

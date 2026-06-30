@@ -9,15 +9,16 @@
 
 int main(int argc, char* argv[]) {
     // get command line args
-    int width, height, numBalls, ballInterval, frameDuration;
+    int width, height, numBalls, ballSize, ballInterval, frameDuration;
     std::string imagePath;
-    if (argc == 7) {
+    if (argc == 8) {
         width = atoi(argv[1]);
         height = atoi(argv[2]);
         numBalls = atoi(argv[3]);
-        ballInterval = atoi(argv[4]);
-        frameDuration = atoi(argv[5]);
-        imagePath = argv[6];
+        ballSize = atoi(argv[4]);
+        ballInterval = atoi(argv[5]);
+        frameDuration = atoi(argv[6]);
+        imagePath = argv[7];
     } else {
         std::cerr << "Error: Incorrect number of command line arguments\n";
         throw argc;
@@ -29,7 +30,7 @@ int main(int argc, char* argv[]) {
     Window window = Window(width, height, RenderMode::simpleRenderer);
     SDL_Surface* revealImg = SDL_ConvertSurfaceFormat(window.loadSurface(imagePath), SDL_PIXELFORMAT_ARGB8888, 0);
 
-    Scene scene = Scene(numBalls, ballInterval, frameDuration, revealImg);
+    Scene scene = Scene(numBalls, ballSize, ballInterval, frameDuration, revealImg);
     scene.draw(window);
 
     Uint64 frameTimer = SDL_GetTicks64();
@@ -56,7 +57,7 @@ int main(int argc, char* argv[]) {
         // output window frame to cout for ffmpeg processing via pipe
         // must be output before present render
         if (scene.displayCompleteSimulation && generateVideo) {
-            SDL_Rect screenRect = {0, 0, revealImg->w, revealImg->h};
+            SDL_Rect screenRect = {0, 0, width, height};
             window.coutFrame(&screenRect);
         }
 
