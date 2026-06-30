@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog as fd
-import os
+import os, sys
 
 # Create main window
 root = tk.Tk()
@@ -95,9 +95,19 @@ def generate():
     # validation
     if width_box.get() != "" and height_box.get() != "" and num_balls_box.get() != "" and ball_size_box.get() != "" and ball_interval_box.get() != "" and \
         frame_dur_box.get() != "" and reveal_path_entry.get() != "" and output_path_entry.get() != "" and video_name_entry.get() != "":
-        os.system(f"../ballSim {width_box.get()} {height_box.get()} {num_balls_box.get()} {ball_size_box.get()} {ball_interval_box.get()} {frame_dur_box.get()} {reveal_path_entry.get()} | ../include/ffmpeg -y -f rawvideo -pixel_format rgb24 -video_size {width_box.get()}x{height_box.get()} -framerate {fps_box.get()} -i - -c:v h264 -pix_fmt yuv420p {output_path_entry.get()}/{video_name_entry.get()}.mov")
+        os.system(f"{resource_path('include/ballSim')} {width_box.get()} {height_box.get()} {num_balls_box.get()} {ball_size_box.get()} {ball_interval_box.get()} {frame_dur_box.get()} \"{reveal_path_entry.get()}\" | {resource_path('include/ffmpeg')} -y -f rawvideo -pixel_format rgb24 -video_size {width_box.get()}x{height_box.get()} -framerate {fps_box.get()} -i - -c:v h264 -pix_fmt yuv420p \"{output_path_entry.get()}/{video_name_entry.get()}.mov\"")
     else:
         validation_label["text"] = "Ensure all fields are filled and valid"
+
+
+# other
+
+# allows paths to be used for both normal running in PyCharm and as an .exe
+# path should be relative to project root folder
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)  # package
+    return os.path.join(os.path.abspath('.'), relative_path)  # normal
 
 
 # gui

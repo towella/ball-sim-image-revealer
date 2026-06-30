@@ -6,14 +6,14 @@ all: build generate
 build:
 # https://medium.com/@edkins.sarah/set-up-sdl2-on-your-mac-without-xcode-6b0c33b723f7
 	@echo "Building..."
-	@g++ -std=c++17 -Wall -Werror -O0 source/*.cpp -I"source/*.hpp" -I"include" -L"lib" -l SDL2-2.0.0 -l SDL2_image-2.0.0 -o ballSim
+	@g++ -std=c++17 -Wall -Werror -O0 source/*.cpp -I"source/*.hpp" -I"include" -L"lib" -l SDL2-2.0.0 -l SDL2_image-2.0.0 -o ./include/ballSim
 	
 run:
 	@echo "Running..."
-	@./ballSim 720 1280 1600 /Users/towella/Documents/programming/GitHub/ball-sim-image-revealer/assets/image.png
+	@./include/ballSim 720 1280 695 20 2 1000 /Users/towella/Documents/programming/GitHub/ball-sim-image-revealer/assets/image.png
 
 clean:
-	@rm ballSim
+	@rm ./include/ballSim
 	@rm *.mov
 	@echo "Clean complete"
 
@@ -25,5 +25,5 @@ generate:
 # -f    force the output to be raw video
 # -i    input url ('-' since piping in byte stream)
 # -c:v  set video codec to h264
-	@./ballSim 720 1280 695 20 2 1000 /Users/towella/Documents/programming/GitHub/ball-sim-image-revealer/assets/image.png | ./include/ffmpeg -y -f rawvideo -pixel_format rgb24 -video_size 720x1280 -framerate 10 -i - -c:v h264 -pix_fmt yuv420p video.mov
+	@./include/ballSim 720 1280 695 20 2 1000 /Users/towella/Documents/programming/GitHub/ball-sim-image-revealer/assets/image.png | ./include/ffmpeg -y -f rawvideo -pixel_format rgb24 -video_size 720x1280 -framerate 10 -i - -c:v h264 -pix_fmt yuv420p video.mov
 	@echo "Generation complete"
