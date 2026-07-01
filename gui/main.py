@@ -132,7 +132,7 @@ num_balls_box = tk_spinbox(root, "Number of Balls: ", "695", 1, 99999, spacer)
 ball_size_box = tk_spinbox(root, "Ball Size: ", "20", 1, 50)
 ball_interval_box = tk_spinbox(root, "Ball Release Interval: ", "2", 1, 999)
 
-sim_dim_label = get_tk_label(root, "Sim box based on image not video size", 11)
+sim_dim_label = get_tk_label(root, "Image scaled to video dimensions", 11)
 sim_dim_label.grid(row=current_row, column=1, pady=(spacer, 0))
 current_row += 1
 reveal_path_entry = file_selection(root, "Reveal Image: ", select_image, "select image")

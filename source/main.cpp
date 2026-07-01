@@ -28,7 +28,26 @@ int main(int argc, char* argv[]) {
     const int targetFps = 60;  // SDL auto caps at 60
     const int ticksPerFrame = 1000 / targetFps;  // a tick is a ms
     Window window = Window(width, height, RenderMode::simpleRenderer);
-    SDL_Surface* revealImg = SDL_ConvertSurfaceFormat(window.loadSurface(imagePath), SDL_PIXELFORMAT_ARGB8888, 0);
+
+    // get scaled reveal image
+    SDL_Surface* unscaledImg = SDL_ConvertSurfaceFormat(window.loadSurface(imagePath), SDL_PIXELFORMAT_ARGB8888, 0);
+    SDL_Rect unscaledRect {0, 0, unscaledImg->w, unscaledImg->h};
+    Uint32 rmask, gmask, bmask, amask;
+    if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+        bmask = 0xff000000;
+        gmask = 0x00ff0000;
+        rmask = 0x0000ff00;
+        amask = 0x000000ff;
+    } else {
+        bmask = 0x000000ff;
+        gmask = 0x0000ff00;
+        rmask = 0x00ff0000;
+        amask = 0xff000000;
+    }
+    SDL_Surface* revealImg = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 32, rmask, gmask, bmask, amask);
+    SDL_Rect revealRect {0, 0, revealImg->w, revealImg->h};
+    SDL_BlitScaled(unscaledImg, &unscaledRect, revealImg, &revealRect);
+    SDL_FreeSurface(unscaledImg);
 
     Scene scene = Scene(numBalls, ballSize, ballInterval, frameDuration, revealImg);
     scene.draw(window);
@@ -76,6 +95,7 @@ int main(int argc, char* argv[]) {
         run = scene.getRun();
     }
 
+    SDL_FreeSurface(revealImg);
     window.close();
     return 0;
 }

@@ -144,11 +144,6 @@ class Window {
             }
         }
 
-        ~Window() {
-            // https://www.geeksforgeeks.org/cpp/new-and-delete-operators-in-cpp-for-dynamic-memory/
-            delete[] pixels;  // free/delete array
-        }
-
         void close() {
             // free all textures
             for (int i = 0; i < allocatedTextures.size(); i++) {
@@ -163,6 +158,8 @@ class Window {
                     SDL_FreeSurface(allocatedSurfaces[i]);
                 }
             }
+
+            delete[] pixels;  // free/delete array
 
             // remove in REVERSE order to creation :)
             SDL_DestroyRenderer(renderer);
